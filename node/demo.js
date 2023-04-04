@@ -1,43 +1,62 @@
-const fs = require('fs');
+// const os = require('os');
 
-try {
-  // 1. Récupérer les données et les stocker dans un tableau d'objets
-  const data = fs.readFileSync('students.txt', 'utf-8');
-  const lines = data.split('\n').filter(Boolean);
-  const students = lines.map((line) => {
-    const [name, address, grade] = line.split(' ');
-    return { name, address, grade: parseInt(grade) };
-  });
+// const {username} = os.userInfo();
 
-  // 2. Recherche des étudiants qui ont eu plus de 17 de moyenne
-  const topStudents = students.filter((student) => student.grade > 17);
-  console.log('Les meilleurs étudiants :', topStudents);
+// const cpus = os.cpus().length;
 
-  // 3. Recherche de l'étudiant qui a eu la meilleure note
-  const bestStudent = students.reduce((acc, cur) => (cur.grade > acc.grade ? cur : acc), { grade: -1 });
-  console.log('Le meilleur étudiant :', bestStudent);
+// console.log(`Hello ${username}  et a ${cpus} cpus!`);
 
-  // 4. Ajout des étudiants dans un tableau
-  const newStudents = [
-    { name: 'Sonia', address: 'Paris', grade: 18 },
-    { name: 'Clarisse', address: 'Marseille', grade: 17 },
-  ];
-  const allStudents = [...students, ...newStudents];
+// process.stdout.write('Hello World!Saisissez votre nom: ');
 
-  // 5. Ordonner les étudiants par note décroissante
-  allStudents.sort((a, b) => b.grade - a.grade);
+// process.stderr.write('Hello Error!');
 
-  // 6. Ajouter les nouveaux étudiants dans le fichier
-  const newLines = newStudents.map((student) => `${student.name} ${student.address} ${student.grade}\n`);
-  fs.appendFileSync('students.txt', newLines.join(''));
+// process.stdin.on('data', (chunk) => {
+// process.exit(0);
+// });
 
-  // 7. Lire le fichier et mettre chaque nom en majuscule
-  const fileData = fs.readFileSync('students.txt', 'utf-8');
-  const upperCaseNames = fileData.split('\n').filter(Boolean).map((line) => {
-    const [name, address, grade] = line.split(' ');
-    return { name: name.toUpperCase(), address, grade: parseInt(grade) };
-  });
-  console.log('Noms en majuscule :', upperCaseNames);
-} catch (err) {
-  console.error(err);
-}
+
+const readline = require('readline');
+const minNumber = 1;
+const maxNumber = 100;
+const maxAttempts = 10;
+
+const random = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+let attempts = 0;
+let WonGame = false;
+
+const rl = readline.createInterface({
+input: process.stdin,
+output: process.stdout
+});
+
+const ask = () => {
+rl.question(`Quel est le nombre ? `, (input) => {
+    const guessedNumber = parseInt(input.trim(), 10);
+    if(isNaN(guessedNumber)) {
+        console.log('Vous devez saisir un nombre');
+    } else{
+        attempts++;
+    }
+    if(guessedNumber === random) {
+        console.log(`Bravo, vous avez trouvé le nombre mystère en ${attempts} essais`);
+        WonGame = true;
+    } else if (attempts >= maxAttempts) {
+        console.log(`Vous avez perdu, le nombre mystère était ${random}`);
+    } else if (guessedNumber < random) {
+        console.log('Le nombre mystère est plus grand');
+    }else {
+        console.log('Le nombre mystère est plus petit');
+    }
+    if(!WonGame || attempts >= maxAttempts) {
+     rl.close();   
+    }else {
+        console.log('Il vous reste ${maxAttempts - attempts} essais');
+        ask();
+    }
+});
+};
+
+console.log('Bienvenue dans le jeu du nombre mystère');
+console.log(`Vous devez trouver un nombre entre ${minNumber} et ${maxNumber}`);
+console.log(`Vous avez ${maxAttempts} essais`);
+ask();

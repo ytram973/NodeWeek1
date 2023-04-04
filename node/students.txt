@@ -10,3 +10,5 @@ Notes Name address
 17 CLARISSE Marseille 
 Sonia Paris 18
 Clarisse Marseille 17
+Sonia Paris 18
+Clarisse Marseille 17
